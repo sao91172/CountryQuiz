@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Country Quiz</string>
+    <string name="help_instructions">
+        Click \"New Quiz\" to begin the quiz. "
+                + "Remeber there are 6 random questions on countries around the world "
+                + "with 3 possible continents being the answer. One of the answers is correct. "
+                + "Select the correct answer to earn a point. Once the quiz is finished, your score will"
+                + " be displayed at the end. "
+                + "Click \"Past Quizzes\" to see a log of past scores.
+    </string>
+</resources>
