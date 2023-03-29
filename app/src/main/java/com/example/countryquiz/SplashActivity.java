@@ -49,13 +49,10 @@ public class SplashActivity extends AppCompatActivity {
 
         //Button that starts the Main Activity when pressed
         helpButton.setOnClickListener(event ->  {
-
             startActivity(new Intent(SplashActivity.this, Help.class));
             finish();
         });
     }
-
-
 
 
     @Override
@@ -68,7 +65,6 @@ public class SplashActivity extends AppCompatActivity {
 
         super.onRestoreInstanceState (savedInstanceState);
     }
-
 
     @Override
     protected void onStart() {
