@@ -5,13 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "Country Quiz";
+
+    CountriesDBHelper CountriesDBHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        try {
+//            CountriesDBHelper = new CountriesDBHelper(MainActivity.this);
+//        } catch (IOException e) {
+//            throw new IOException();
+//            // log something
+//        }
     }
 
     // These activity callback methods are not needed and are for educational purposes only
