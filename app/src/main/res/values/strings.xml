@@ -8,4 +8,6 @@
                 + " be displayed at the end. "
                 + "Click \"Past Quizzes\" to see a log of past scores.
     </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
