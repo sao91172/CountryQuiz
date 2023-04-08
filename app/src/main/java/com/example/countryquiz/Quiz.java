@@ -8,7 +8,12 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -17,153 +22,110 @@ Object is used for the saving the quizzes from the csv and using the attributes 
 references to 6 Question class objects, a date, a current score, and the number of
 questions answered so far
  */
-public class Quiz {
+public class Quiz implements Serializable {
     public static final String DEBUG_TAG = "Quiz";
-    private long   id;
-    private String question;
-    private String answerA;
-    private String answerB;
-    private String answerC;
+    private long id;
+    private String date;
+    private List<String> questions;
+    private List<String> questionAnswers;
+    private int result;
 
-
-
-    private String question1;
-    private String question2;
-    private String question3;
-    private String question4;
-    private String question5;
-    private String question6;
-    private double score;
-    private int answered;
-    private String date_time;
-
-
-
-    public Quiz(){
+    public Quiz() {
         this.id = -1;
-        this.question = null;
-        this.answerA = null;
-        this.answerB = null;
-        this.answerC = null;
-
-
-        this.score = Double.parseDouble(null);
-        this.answered = Integer.parseInt(null);
-        this.date_time = null;
-
-    }//default constructor
-
-    public Quiz( String question, String answerA, String answerB, String answerC,
-                 double score, int answered, String time){
-        this.id = -1;
-        this.question = question;
-        this.answerA = answerA;
-        this.answerB = answerB;
-        this.answerC = answerC;
-
-        this.score = score;
-        this.answered =answered;
-        this.date_time = time;
+        this.date = null;
+        this.questions = new ArrayList<>();
+        this.questionAnswers = new ArrayList<>();
+        this.result = 0;
     }
 
-    public long getId()
-    {
+    public Quiz(List<String> questions) {
+        this.id = -1;
+        this.date = null;
+        this.questions = new ArrayList<>();
+        this.questionAnswers = new ArrayList<>();
+        for (String question: questions) {
+            this.questions.add(question);
+        }
+        this.result = 0;
+    }
+
+    public Quiz(String date, List<String> questions, int result) {
+        this.id = -1;
+        this.date = date;
+        this.questions = new ArrayList<>();
+        this.questionAnswers = new ArrayList<>();
+        for (String question: questions) {
+            this.questions.add(question);
+        }
+        this.result = result;
+    }
+
+    public Quiz(String date, List<String> questions, List<String> questionAnswers, int result) {
+        this.id = -1;
+        this.date = date;
+        this.questions = new ArrayList<>();
+        this.questionAnswers = new ArrayList<>();
+        for (String question: questions) {
+            this.questions.add(question);
+        }
+        for (String answer: questionAnswers) {
+            this.questionAnswers.add(answer);
+        }
+        this.result = result;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(long id)
-    {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getQuestion() {
-        return question;
+    public String getDate() {
+        return date;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    //GETTERS
-    public String getAnswerA() {
-        return answerA;
-    }
-    public String getAnswerB() {
-        return answerB;
-    }
-    public String getAnswerC() {
-        return answerC;
-    }
-    public double getScore() {
-        return score;
-    }
-    public int getAnswered() {
-        return answered;
-    }
-    public String getDate_time() {
-        return date_time;
+    public List<String> getQuestions() {
+        return questions;
     }
 
+    public void setQuestions(List<String> questions) {
+        if (this.questions == null)
+            this.questions = new ArrayList<>();
 
-    //SETTERS
-    public void setAnswerA(String answerA) {
-        this.answerA = answerA;
-    }
-    public void setAnswerB(String answerB) {
-        this.answerB = answerB;
-    }
-    public void setAnswerC(String answerC) {
-        this.answerC = answerC;
+        for (String question: questions) {
+            this.questions.add(question);
+        }
     }
 
-
-    public void setQuestion1(String question) {
-        this.question1 = question;
-    }
-    public void setQuestion2(String question) {
-        this.question2 = question;
-    }
-    public void setQuestion3(String question) {
-        this.question3 = question;
-    }
-    public void setQuestion4(String question) {
-        this.question4 = question;
-    }
-    public void setQuestion5(String question) {
-        this.question5 = question;
-    }
-    public void setQuestion6(String question) {
-        this.question6 = question;
-    }
-    public void setScore(double score) {
-        this.score = score;
-    }
-    public void setAnswered(int answered) {
-        this.answered = answered;
-    }
-    public void setDate_time(String time) {
-        this.date_time = time;
+    public List<String> getQuestionAnswers() {
+        return questionAnswers;
     }
 
+    public void setQuestionAnswers(List<String> questionAnswers) {
+        if (this.questionAnswers == null)
+            this.questionAnswers = new ArrayList<>();
 
-/*
-
-    public ContentValues input() {
-        ContentValues values = new ContentValues();
-        //  values.put(QuizDBHelper.RESULTS_COLUMN_ID, this.id);
-        values.put(QuizDBHelper.RESULTS_COLUMN_QUESTION1, this.question1);
-        System.out.println(this.question1);
-        values.put(QuizDBHelper.RESULTS_COLUMN_QUESTION2, this.question2);
-        System.out.println(this.question2);
-        values.put(QuizDBHelper.RESULTS_COLUMN_QUESTION3, this.question3);
-        values.put(QuizDBHelper.RESULTS_COLUMN_QUESTION4, this.question4);
-        values.put(QuizDBHelper.RESULTS_COLUMN_QUESTION5, this.question5);
-        values.put(QuizDBHelper.RESULTS_COLUMN_QUESTION6, this.question6);
-        values.put(QuizDBHelper.RESULTS_NUM_OF_ANSWERED, this.answered);
-        values.put(QuizDBHelper.RESULTS_NUM_OF_CORRECT, this.score);
-        values.put(QuizDBHelper.RESULTS_DATETIME, this.date_time);
-        return values;
+        for (String answer: questionAnswers) {
+            this.questions.add(answer);
+        }
     }
-    */
+
+    public int getResult() {
+        return result;
+    }
+
+    public void setResult(int result) {
+        this.result = result;
+    }
+
+    public String toString() {
+        return id + ": " + date + " " + result;
+    }
 
 }

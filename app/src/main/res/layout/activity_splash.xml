@@ -30,7 +30,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="32dp"
         android:paddingLeft="26dp"
-        android:text="An app to learn about college majors with descriptions and career options."
+        android:text="How well do you know your geography? Test to find out!"
         android:textAlignment="center"
         android:textSize="16sp" />
 
@@ -82,5 +82,13 @@
             app:layout_constraintVertical_chainStyle="packed" />
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+    </FrameLayout>
 
 </LinearLayout>
