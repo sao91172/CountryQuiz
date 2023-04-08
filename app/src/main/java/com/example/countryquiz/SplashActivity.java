@@ -1,14 +1,24 @@
 package com.example.countryquiz;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Class that represents the initial(splash) screen for app.
@@ -22,11 +32,16 @@ public class SplashActivity extends AppCompatActivity {
     private Button   newQuizButton;
     private Button helpButton;
 
+    private QuizData quizData = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d( DEBUG_TAG, "SplashActivity.onCreate(): savedInstanceState: " + savedInstanceState );
         setContentView(R.layout.activity_splash);
+
+        quizData = new QuizData(this);
+
 
 
 
@@ -39,20 +54,122 @@ public class SplashActivity extends AppCompatActivity {
 
 
 
-        //Button that starts the Main Activity when pressed
-        newQuizButton.setOnClickListener(event ->  {
+        //Button that starts the quiz when pressed
+        newQuizButton.setOnClickListener(new View.OnClickListener()  {
 
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            finish();
+            @Override
+
+            public void onClick(View v) {
+
+                new RetrieveCountriesForQuizTask().execute();
+                getSupportFragmentManager().beginTransaction().add(R.id.container,new StartQuizFragment()).commit();
+            }
+
+
         });
 
 
+
         //Button that starts the Main Activity when pressed
-        helpButton.setOnClickListener(event ->  {
-            startActivity(new Intent(SplashActivity.this, Help.class));
-            finish();
+        helpButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+
+            public void onClick(View v) {
+                HelpFragment fragment = new HelpFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.frameLayout, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+
+        });
+
+
+        /*
+         * When review quiz button pressed, takes the user to the review quiz fragment
+         */
+        pastQuizButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new RetrieveAllPastQuizzesTask().execute();
+                Intent viewPastQuizzes = new Intent(SplashActivity.this, PastQuizActivity.class);
+                startActivity(viewPastQuizzes);
+            }
         });
     }
+
+    // This is an AsyncTask class (it extends AsyncTask) to perform DB reading of the countries for the quiz, asynchronously.
+    private class RetrieveCountriesForQuizTask extends AsyncTask<Void, Void, List<Country>> {
+
+        // This method will run as a background process to read from db.
+        @Override
+        protected List<Country> doInBackground(Void... params ) {
+            List<Country> countriesForQuiz = quizData.retrieveCountriesForQuiz();
+            return countriesForQuiz;
+        }
+
+        // This method will be automatically called by Android once the writing to the database
+        // in a background process has finished.
+        @Override
+        protected void onPostExecute( List<Country> countriesForQuiz ) {
+            super.onPostExecute( countriesForQuiz);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            String date = simpleDateFormat.format(new Date());
+            List<String> questions = new ArrayList<>();
+            List<String> questionAnswers = new ArrayList<>();
+            for(Country country: countriesForQuiz){
+                questions.add(country.getCountry());
+                questionAnswers.add(country.getContinent());
+            }
+            int result = 0;
+            Quiz newQuiz = new Quiz(date, questions, questionAnswers, result);
+
+            QuizFragment newQuizFragment = new QuizFragment();
+            //save the new quiz data in the new quiz fragment's Bundle data
+            Bundle args = new Bundle();
+            args.putSerializable("newQuiz", newQuiz);
+            newQuizFragment.setArguments(args);
+
+            //Code below will determine when newQuiz will be stored in database
+            Log.d( DEBUG_TAG, "New quiz has been created");
+
+            Intent countryQ = new Intent(SplashActivity.this, StartQuizFragment.class);
+            countryQ.putExtras(args);
+            startActivity(countryQ);
+        }
+    }
+
+    // This is an AsyncTask class (it extends AsyncTask) to perform DB reading of the countries for the quiz, asynchronously.
+    private class RetrieveAllPastQuizzesTask extends AsyncTask<Void, Void, ArrayList<Quiz>> {
+
+        // This method will run as a background process to read from db.
+        @Override
+        protected ArrayList<Quiz> doInBackground( Void... params ) {
+            ArrayList<Quiz> pastQuizzes = quizData.retrieveAllQuizzes();
+            return pastQuizzes;
+        }
+
+        // This method will be automatically called by Android once the writing to the database
+        // in a background process has finished.
+        @Override
+        protected void onPostExecute( ArrayList<Quiz> pastQuizzes ) {
+            super.onPostExecute( pastQuizzes);
+
+            if(pastQuizzes.size() > 0) {
+                //Code below will determine how pastQuizzes will get sent to fragment
+                QuizFragment newQuizFragment = new QuizFragment();
+                //save all the past quiz data in the new quiz fragment's Bundle data
+                Bundle args = new Bundle();
+                args.putSerializable("pastQuizzes", pastQuizzes);
+                newQuizFragment.setArguments(args);
+            }
+
+            Log.d( DEBUG_TAG, "Retrieved all past quizzes");
+        }
+    }
+
 
 
     @Override
@@ -65,6 +182,7 @@ public class SplashActivity extends AppCompatActivity {
 
         super.onRestoreInstanceState (savedInstanceState);
     }
+
 
     @Override
     protected void onStart() {

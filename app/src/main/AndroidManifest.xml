@@ -12,7 +12,10 @@
         android:theme="@style/Theme.CountryQuiz"
         tools:targetApi="31">
         <activity
-            android:name=".Help"
+            android:name=".PastQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CountryQuizRecyclerAdapter"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
