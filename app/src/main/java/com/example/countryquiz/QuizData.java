@@ -35,6 +35,8 @@ public class QuizData {
 
     // this is a reference to our database; it is used later to run SQL commands
     public SQLiteDatabase db;
+    private final Context context;
+    private static QuizData instance;
     public CountriesDBHelper countriesDBHelper;
 
 
@@ -61,8 +63,17 @@ public class QuizData {
     };
 
     public QuizData(Context context) {
-        this.countriesDBHelper = CountriesDBHelper.getInstance(context);
+        this.countriesDBHelper = CountriesDBHelper.getInstance(context);//comeback to this
+        this.context = context;
+
     }
+
+    public static synchronized QuizData getInstance(Context context) {
+        if (instance == null) {
+            instance = new  QuizData(context.getApplicationContext());
+        } // if
+        return instance;
+    } // getInstance()
 
     // Open the database
     public void open() {
@@ -244,44 +255,6 @@ public class QuizData {
     }
 
 
-//    public List<Country> retrieveAllCountries() {
-//        ArrayList<Country> countries = new ArrayList<>();
-//        Cursor cursor = null;
-//
-//        try {
-//            //Execute the select query and get the Cursor to iterate over the retrieved rows
-//            cursor = db.query(CountriesDBHelper.TABLE_COUNTRIES, allCountriesTableColumns,
-//                    null, null, null, null, null);
-//
-//            //collect all countries into a List
-//            if (cursor.getCount() > 0) {
-//                while (cursor.moveToNext()) {
-//                    //get all attribute values of this country
-//                    long id = cursor.getLong(cursor.getColumnIndex(CountriesDBHelper.COUNTRIES_COLUMN_ID));
-//                    String country = cursor.getString(cursor.getColumnIndex(CountriesDBHelper.COUNTRIES_COLUMN_COUNTRY));
-//                    String continent = cursor.getString(cursor.getColumnIndex(CountriesDBHelper.COUNTRIES_COLUMN_CONTINENT));
-//
-//                    //create a new country object and set its state to the retrieved values
-//                    Country countryObject = new Country(country, continent);
-//                    countryObject.setId(id);
-//                    //add it to the list
-//                    countries.add(countryObject);
-//                    Log.d(DEBUG_TAG, "Retrieved Countries: " + countryObject);
-//                }
-//            }
-//            Log.d(DEBUG_TAG, "Number of records from DB: " + cursor.getCount());
-//        } catch (Exception e) {
-//            Log.d(DEBUG_TAG, "Exception caught: " + e);
-//        } finally {
-//            //we should close the cursor
-//            if (cursor != null) {
-//                cursor.close();
-//            }
-//        }
-//        //return a list of retrieved countries
-//        return countries;
-//    }
-
     public ArrayList<Quiz> retrieveAllQuizzes() {
         ArrayList<Quiz> quizzes = new ArrayList<>();
         open();
@@ -328,12 +301,6 @@ public class QuizData {
                     questions.add(quest4);
                     questions.add(quest5);
                     questions.add(quest6);
- //                   questions.add(cursor.getString(cursor.getColumnIndex(CountriesDBHelper.QUIZZES_COLUMN_QUESTION1)));
-//                    questions.add(cursor.getString(cursor.getColumnIndex(CountriesDBHelper.QUIZZES_COLUMN_QUESTION2)));
-//                    questions.add(cursor.getString(cursor.getColumnIndex(CountriesDBHelper.QUIZZES_COLUMN_QUESTION3)));
-//                    questions.add(cursor.getString(cursor.getColumnIndex(CountriesDBHelper.QUIZZES_COLUMN_QUESTION4)));
-//                    questions.add(cursor.getString(cursor.getColumnIndex(CountriesDBHelper.QUIZZES_COLUMN_QUESTION5)));
-//                    questions.add(cursor.getString(cursor.getColumnIndex(CountriesDBHelper.QUIZZES_COLUMN_QUESTION6)));
 
                     //create a new country object and set its state to the retrieved values
                     Quiz quizObject = new Quiz(date, questions, result);
@@ -360,133 +327,3 @@ public class QuizData {
 
 }
 
-
-//    /**
-//     * gets 6 random quiz rows to input into the quiz questions fragment
-//     * @return
-//     */
-//    public List<Quiz> getQuiz() {
-//
-//        List<Quiz> quizzes = new ArrayList<>();
-//        Cursor cursor = null;
-//        int columnIndex;
-//        this.open();
-//
-//
-//        try {
-//            // Execute the select query and get the Cursor to iterate over the retrieved rows
-//            cursor = db.query(countriesDBHelper.TABLE_QUIZ, allColumns,
-//                    null, null, null, null, null);
-//
-//            // collect all job leads into a List
-//            if (cursor != null && cursor.getCount() > 0) {
-//
-//                Random r = new Random();
-//                int [] picked = new int[6];
-//                boolean distinct;
-//                for (int i = 0; i < 6; i++) {
-//                    distinct = false;
-//                    picked[i] = r.nextInt(50);
-//                    while (!distinct) {
-//                        distinct = true;
-//                        for (int j = 0; j < i; j++) {
-//                            if (picked[i] == picked[j]) {
-//                                distinct = false;
-//                                picked[i] = r.nextInt(50);
-//                            }
-//                        }
-//                    }
-//                }
-//                for (int i = 0; i < 6; i++) {
-//                    Log.d(DEBUG_TAG, "" + picked[i]);
-//                    cursor.moveToPosition(picked[i]);
-//                    // get all attribute values of this job lead
-//                    columnIndex = cursor.getColumnIndex(CountriesDBHelper.QUIZZES_COLUMN_QUIZ_ID);
-//                    long id = cursor.getLong(columnIndex);
-//                    columnIndex = cursor.getColumnIndex(CountriesDBHelper.QUIZ_COLUMN_QUESTION);
-//                    String question = cursor.getString(columnIndex);
-//                    columnIndex = cursor.getColumnIndex(CountriesDBHelper.QUIZ_COLUMN_ANSWER);
-//                    String answer = cursor.getString(columnIndex);
-//                    columnIndex = cursor.getColumnIndex(CountriesDBHelper.QUIZ_COLUMN_XANSWER1);
-//                    String xAnswer1 = cursor.getString(columnIndex);
-//                    columnIndex = cursor.getColumnIndex(CountriesDBHelpeR.QUIZ_COLUMN_XANSWER2);
-//                    String xAnswer2 = cursor.getString(columnIndex);
-//
-//                    // create a new JobLead object and set its state to the retrieved values
-//                    Quiz q = new Quiz(question, answer, xAnswer1, xAnswer2);
-//                    q.setId(id); // set the id (the primary key) of this object
-//                    // add it to the list
-//                    quizzes.add(q);
-//                    Log.d(DEBUG_TAG, "Quiz loaded: " + q.getQuestion());
-//                }
-//            }
-//        } catch (Exception e) {
-//            Log.d(DEBUG_TAG, "Exception caught: " + e);
-//        } finally {
-//            // we should close the cursor
-//            if (cursor != null) {
-//                cursor.close();
-//            }
-//        }
-////        Log.d(DEBUG_TAG, String.valueOf(quizzes));
-//        quiz = new ArrayList<>(quizzes);
-//        Log.d(DEBUG_TAG, String.valueOf(quiz));
-//        return quizzes;
-//    }
-
-    //Make a method to update the Quizzes table
-//    public void addQuizResult(Integer quiz_id, String quiz_date, String quiz_result) {
-//        // on below line we are creating a variable for
-//        // our sqlite database and calling writable method
-//        // as we are writing data in our database.
-//        SQLiteDatabase db = countriesDBHelper.getWritableDatabase();
-//
-//        // on below line we are creating a
-//        // variable for content values.
-//        ContentValues values = new ContentValues();
-//
-//        // on below line we are passing all values
-//        // along with its key and value pair.
-//        values.put(countriesDBHelper.QUIZZES_COLUMN_QUIZ_ID, quiz_id);
-//        values.put(countriesDBHelper.QUIZZES_COLUMN_QUIZ_DATE, quiz_date);
-//        values.put(countriesDBHelper.QUIZZES_COLUMN_QUIZ_RESULT, quiz_result);
-//
-//
-//        // after adding all values we are passing
-//        // content values to our table.
-//        db.insert(countriesDBHelper.TABLE_QUIZZES, null, values);
-//
-//        // at last we are closing our
-//        // database after adding database.
-//        db.close();
-//    } //addQuizResult
-
-//     we have created a new method for reading all the countries
-//    public ArrayList<Country> readCountries() {
-//        // on below line we are creating a
-//        // database for reading our database.
-//        SQLiteDatabase db = countriesDBHelper.getReadableDatabase();
-//
-//        // on below line we are creating a cursor with query to read data from database.
-//        Cursor cursorCountries = db.rawQuery("SELECT * FROM " + countriesDBHelper.TABLE_COUNTRY_CONTINENT, null);
-//
-//        // on below line we are creating a new array list.
-//        ArrayList<Country> countriesArrayList = new ArrayList<Country>();
-//
-//        // moving our cursor to first position.
-//        if (cursorCountries.moveToFirst()) {
-//            do {
-//                // on below line we are adding the data from cursor to our array list.
-//                // This creates a new Country Object and adds it to the array list
-//                countriesArrayList.add(new Country(cursorCountries.getString(1), //reads country
-//                        cursorCountries.getString(2))); //reads continent
-//                // cursorCountries.getString(3))); //reads id
-//            } while (cursorCountries.moveToNext());
-//            // moving our cursor to next.
-//        }
-//        // at last closing our cursor
-//        // and returning our array list.
-//        cursorCountries.close();
-//        return countriesArray = countriesArrayList;
-//    }
-//}

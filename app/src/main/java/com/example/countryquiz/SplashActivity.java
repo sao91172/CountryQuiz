@@ -60,7 +60,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
 
             public void onClick(View v) {
-
+                setContentView(R.layout.activity_main);
                 new RetrieveCountriesForQuizTask().execute();
                 getSupportFragmentManager().beginTransaction().add(R.id.container,new StartQuizFragment()).commit();
             }
@@ -75,13 +75,11 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
 
+
             public void onClick(View v) {
-                HelpFragment fragment = new HelpFragment();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.frameLayout, fragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                setContentView(R.layout.fragment_help);
+                getSupportFragmentManager().beginTransaction().add(R.id.framelayout,new HelpFragment()).commit();
+
                 }
 
         });
@@ -98,6 +96,20 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(viewPastQuizzes);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            super.onBackPressed();
+            //additional code
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+
     }
 
     // This is an AsyncTask class (it extends AsyncTask) to perform DB reading of the countries for the quiz, asynchronously.
